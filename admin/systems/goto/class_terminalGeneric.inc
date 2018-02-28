@@ -191,10 +191,6 @@ class termgeneric extends plugin
                     $tmp = new $evt['CLASS_NAME']($this->config);
                     $tmp->add_targets(array($this->netConfigDNS->macAddress));
                     $tmp->set_type(TRIGGERED_EVENT);
-                    $o_queue = new gosaSupportDaemon();
-                    if(!$o_queue->append($tmp)){
-                        msg_dialog::display(_("Service infrastructure"),msgPool::siError($o_queue->get_error()),ERROR_DIALOG);
-                    }
                 }
             }else{
                 msg_dialog::display(_("Event error"),
@@ -242,11 +238,7 @@ class termgeneric extends plugin
         $smarty->assign("inheritTimeServer",$this->inheritTimeServer);
 
         /* Check if terminal is online */
-        if (gosaSupportDaemon::ping($this->netConfigDNS->macAddress)){
-            $smarty->assign("actions", set_post(array("halt" => _("Switch off"),"reboot" => _("Reboot"))));
-        } else {
-            $smarty->assign("actions", set_post(array("wake" => _("Wake up"))));
-        }
+        $smarty->assign("actions", set_post(array("wake" => _("Wake up"))));
 
         /* Arrays */
         $smarty->assign("modes", set_post($this->modes));
@@ -288,8 +280,7 @@ class termgeneric extends plugin
         $smarty->assign("ntpservers",     set_post($tmp));
         $smarty->assign("fai_activated",$this->fai_activated);
 
-        $si_url = $this->config->get_cfg_value("core","gosaSupportURI");
-        $smarty->assign("si_activated",!empty($si_url));
+        $smarty->assign("si_activated",FALSE);
 
         /* Variables */
         foreach(array("gotoMode", "gotoTerminalPath", "gotoSwapServer","gotoSyslogServer", "gotoNtpServer") as $val){
@@ -352,12 +343,6 @@ class termgeneric extends plugin
                 update_accessTo($this->cn,"");
             }
 
-            /* Clean queue form entries with this mac 
-             */
-            if(class_available("gosaSupportDaemon") && tests::is_mac($this->netConfigDNS->orig_macAddress)){
-                $q = new gosaSupportDaemon();
-                $q->clean_queue_from_mac($this->netConfigDNS->orig_macAddress);
-            }
         }
     }
 
@@ -615,15 +600,11 @@ another location! */
          */
         if ($activate && class_available("DaemonEvent")){
             $events = DaemonEvent::get_event_types(SYSTEM_EVENT | HIDDEN_EVENT);
-            $o_queue = new gosaSupportDaemon();
             if(isset($events['TRIGGERED']['DaemonEvent_installation_activation'])){
                 $evt = $events['TRIGGERED']['DaemonEvent_installation_activation'];
                 $tmp = new $evt['CLASS_NAME']($this->config);
                 $tmp->set_type(TRIGGERED_EVENT);
                 $tmp->add_targets(array($this->netConfigDNS->macAddress));
-                if(!$o_queue->append($tmp)){
-                    msg_dialog::display(_("Service infrastructure"),msgPool::siError($o_queue->get_error()),ERROR_DIALOG);
-                }
             }
         }
     }

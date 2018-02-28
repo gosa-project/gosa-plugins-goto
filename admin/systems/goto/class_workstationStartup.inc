@@ -802,7 +802,6 @@ another location! */
         /* Check if LDAP server has changed */
         if ($this->si_active && (isset($this->attrs['gotoLdapServer']) && class_available("DaemonEvent") || $this->gotoLdap_inherit)){
             $events = DaemonEvent::get_event_types(SYSTEM_EVENT | HIDDEN_EVENT);
-            $o_queue = new gosaSupportDaemon();
             if(isset($events['TRIGGERED']['DaemonEvent_reload_ldap_config'])){
                 $evt = $events['TRIGGERED']['DaemonEvent_reload_ldap_config'];
                 $macs = array();
@@ -843,9 +842,6 @@ another location! */
                     $tmp = new $evt['CLASS_NAME']($this->config);
                     $tmp->set_type(TRIGGERED_EVENT);
                     $tmp->add_targets(array($mac));
-                    if(!$o_queue->append($tmp)){
-                        msg_dialog::display(_("Service infrastructure"),msgPool::siError($o_queue->get_error()),ERROR_DIALOG);
-                    }
                 }
             }
         }
@@ -968,24 +964,8 @@ another location! */
         /* Get the list of available servers and their releases. 
          */
         if($force || !isset($this->cache['SERVERS'])){
-
-            $o_queue = new gosaSupportDaemon();
-            $tmp = $o_queue->FAI_get_server();
-            if($o_queue->is_error()){
-                msg_dialog::display(_("Service infrastructure"),msgPool::siError($o_queue->get_error()),ERROR_DIALOG);
-                $this->si_fai_action_failed = TRUE;
-                $this->cache = array();
-                return;
-            }else{
-
-                foreach($tmp as $entry){
-                    $rel = $entry['FAI_RELEASE'];
-                    $this->cache['SERVERS']['auto'][$rel] = $rel;
-                    $this->cache['SERVERS'][$entry['SERVER']][$rel] = $rel;
-                    uksort($this->cache['SERVERS']['auto'], 'strnatcasecmp');
-                    uksort($this->cache['SERVERS'][$entry['SERVER']], 'strnatcasecmp');
-                }
-            }
+            $this->si_fai_action_failed = TRUE;
+            $this->cache = array();
         }
 
         /* Ensure that our selection is valid, else we get several PHP warnings 
@@ -1028,21 +1008,10 @@ another location! */
 
             /* Get the list of available servers and their releases.
              */
-            $o_queue = new gosaSupportDaemon();
-            $tmp = $o_queue->FAI_get_classes($release);
-
             $this->cache['CLASSES'][$release] = array();
-            if($o_queue->is_error()){
-                msg_dialog::display(_("Service infrastructure"),msgPool::siError($o_queue->get_error()),ERROR_DIALOG);
-                $this->si_fai_action_failed = TRUE;
-                $this->cache=array();
-                return;
-            }else{
-                foreach($tmp as $entry){
-                    $class = $entry['CLASS'];
-                    $this->cache['CLASSES'][$release][$class][] = $this->analyse_fai_object($entry); 
-                }
-            }
+            $this->si_fai_action_failed = TRUE;
+            $this->cache=array();
+            return;
 
             /* Add object caught from external hook
              */
@@ -1089,15 +1058,9 @@ another location! */
         if(!isset($this->cache['KERNELS'])) $this->cache['KERNELS'] = array();
 
         if($force || !isset($this->cache['KERNELS'][$release])){
-            $o_queue = new gosaSupportDaemon();
-            $tmp = $o_queue->FAI_get_kernels($release);
             $this->cache['KERNELS'][$release] = array();
             foreach($this->gotoBootKernels as $name => $default){
                 $this->cache['KERNELS'][$release][$name] = $default;
-            }
-            foreach($tmp as $kernel){
-                if(empty($kernel)) continue;
-                $this->cache['KERNELS'][$release][$kernel]=$kernel;
             }
             ksort($this->cache['KERNELS'][$release]);
         }

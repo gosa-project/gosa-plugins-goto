@@ -4,7 +4,7 @@ class filterGotoEvents extends  filterLDAP {
     {
         global $config;
 
-        $o_queue = new gosaSupportDaemon(TRUE,5);
+        $o_queue = NULL;
         $events  = DaemonEvent::get_event_types( SYSTEM_EVENT);
 
         /* Get tags that will be used in queue searches */
@@ -13,10 +13,7 @@ class filterGotoEvents extends  filterLDAP {
             $event_tags[] = $evt['s_Queued_Action'];
         }
 
-        $entries = $o_queue->get_queued_entries($event_tags,0,9999999,"id");
-        if ($o_queue->is_error()){
-            msg_dialog::display(_("Error"), sprintf(_("Cannot load queue entries: %s"), "<br><br>".$o_queue->get_error()), ERROR_DIALOG);
-        }
+        $entries = array();
 
         /* Assign entries by id.
          */

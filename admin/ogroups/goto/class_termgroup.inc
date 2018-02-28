@@ -199,10 +199,6 @@ class termgroup extends plugin
                     $tmp = new $evt['CLASS_NAME']($this->config);
                     $tmp->add_targets($macaddresses);
                     $tmp->set_type(TRIGGERED_EVENT);
-                    $o_queue = new gosaSupportDaemon();
-                    if(!$o_queue->append($tmp)){
-                        msg_dialog::display(_("Service infrastructure"),msgPool::siError($o_queue->get_error()),ERROR_DIALOG);
-                    }
                 }
             } else {
                 msg_dialog::display(_("Event error"),

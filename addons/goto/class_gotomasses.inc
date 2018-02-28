@@ -39,11 +39,12 @@ class gotomasses extends management
     var $acl_base;
     var $acl_category;
 
+    var $o_queue = NULL;
+
     function __construct(&$config, $ui)
     {
         /* Include config object */
         $this->config= &$config;
-        $this->o_queue = new gosaSupportDaemon(TRUE,5);
         $this->events  = DaemonEvent::get_event_types( SYSTEM_EVENT);
         $this->acl_base = $config->current['BASE'];
         $this->acl_category = "gotomasses/";
@@ -275,23 +276,6 @@ class gotomasses extends management
     {
         if($this->acl_is_removeable("")){
             timezone::get_default_timezone();
-            foreach($this->ids_to_remove as $id){
-                $entry = $this->o_queue->get_entries_by_id(array($id));
-                if(isset($entry['ANSWER1'])){
-                    $entry = $entry['ANSWER1'];
-                    if( $entry['STATUS'] == "waiting" && 
-                            $entry['HEADERTAG'] == "trigger_action_reinstall"){
-                        $evt = new DaemonEvent_reinstall($this->config,$entry);
-                        if($evt->get_timestamp(FALSE)  < time()){
-                            $r_evt = new DaemonEvent_localboot($this->config);
-                            $r_evt->add_targets(array($entry['MACADDRESS']));
-                            $r_evt->set_type(TRIGGERED_EVENT);
-                            $this->o_queue->append($r_evt);
-                        }
-                    }
-                }
-            }
-            $this->o_queue->remove_entries($this->ids_to_remove);
             $this->save();
         }
     }
@@ -322,10 +306,6 @@ class gotomasses extends management
             $tmp->add_targets($update_ids);
             $tmp->set_type(TRIGGERED_EVENT);
             $this->recently_removed = $update_ids;
-            if(!$this->o_queue->append($tmp)){
-                msg_dialog::display(_("Error"), sprintf(_("Cannot update queue entry: %s"),$id) , ERROR_DIALOG);
-                return(FALSE);
-            }
         }else{
             msg_dialog::display(_("Error"),
                     sprintf(_("Required class '%s' cannot be found: job not aborted!"),
@@ -379,11 +359,7 @@ class gotomasses extends management
     {
         if(is_object($this->dialogObject)){
             $this->dialogObject->save_object();
-            if(!$this->o_queue->append($this->dialogObject)){
-                msg_dialog::display(_("Service infrastructure"),msgPool::siError($this->o_queue->get_error()),ERROR_DIALOG);
-            }else{
-                $this->current = -1;
-            } 
+            $this->current = -1;
         }
         $this->closeDialogs();
     }
@@ -425,9 +401,9 @@ class gotomasses extends management
         }
 
         if($type == "up" && $next != 0){
-            return($this->o_queue->update_entries(array($id),array("timestamp" => $next)));
+            return TRUE;
         }elseif($type == "down" && $last != 0){
-            return($this->o_queue->update_entries(array($id),array("timestamp" => $last)));
+            return TRUE;
         }
     }
 
@@ -473,14 +449,6 @@ class gotomasses extends management
             }
         }
 
-        /* Tell the daemon that we have entries to update.
-         */
-        if(count($update_ids)){
-            if(!$this->o_queue->update_entries($update_ids,$data)){
-                msg_dialog::display(_("Error"), sprintf(_("Cannot update queue entry: %s"),$id) , ERROR_DIALOG);
-                return(FALSE);
-            }
-        }
         return(TRUE);
     }
 
@@ -508,14 +476,6 @@ class gotomasses extends management
             }
         }
 
-        /* Tell the daemon that we want to update some entries
-         */
-        if(count($update_ids)){
-            if(!$this->o_queue->update_entries($update_ids,$data)){
-                msg_dialog::display(_("Error"), sprintf(_("Cannot update queue entries.")) , ERROR_DIALOG);
-                return(FALSE);
-            }
-        }
         return(TRUE);
     }
 
@@ -544,14 +504,7 @@ class gotomasses extends management
             }
         }
 
-        /* Tell the daemon that we want to update some entries
-         */
-        if(count($update_ids)){
-            if(!$this->o_queue->update_entries($update_ids,$data)){
-                msg_dialog::display(_("Error"), sprintf(_("Cannot update queue entry: %s"),$id) , ERROR_DIALOG);
-                return(FALSE);
-            }
-        }
+
         return(TRUE);
     }
 

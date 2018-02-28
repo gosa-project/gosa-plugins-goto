@@ -597,7 +597,7 @@ class termservice extends plugin
         }
         $this->handle_post_events("modify");
 
-        /* Send goto reload event to gosaSupportDaemon */
+        /* Send goto reload event */
         if(count($this->attrs)){
             $this->send_goto_reload();
         }
@@ -637,7 +637,6 @@ class termservice extends plugin
     {
         if(count($this->attrs) && class_available("DaemonEvent")){
             $events = DaemonEvent::get_event_types(SYSTEM_EVENT | HIDDEN_EVENT);
-            $o_queue = new gosaSupportDaemon();
             if(isset($events['TRIGGERED']['DaemonEvent_goto_reload'])){
                 $evt = $events['TRIGGERED']['DaemonEvent_goto_reload'];
                 $macs = array();
@@ -670,12 +669,9 @@ class termservice extends plugin
                 if(count($macs)){
                     $tmp = new $evt['CLASS_NAME']($this->config);
                     $tmp->set_type(TRIGGERED_EVENT);
-                    $target = $o_queue->get_host().":".$o_queue->get_port();
+                    $target = ":"."0";
                     $tmp->add_targets(array($target));
                     $tmp->set_macs($macs);
-                    if(!$o_queue->append($tmp,TRUE)){
-                        msg_dialog::display(_("Service infrastructure"),msgPool::siError($o_queue->get_error()),ERROR_DIALOG);
-                    }
                 }
             }
         }

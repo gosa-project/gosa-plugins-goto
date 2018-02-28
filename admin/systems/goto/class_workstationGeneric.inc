@@ -82,19 +82,6 @@ class workgeneric extends plugin
         $this->netConfigDNS = new termDNS($this->config,$this,$this->objectclasses);
         $this->netConfigDNS->MACisMust =TRUE;
 
-        /* Check if this host is currently in installation process*/
-        if(class_available("gosaSupportDaemon") && class_available("DaemonEvent")){
-            $o = new gosaSupportDaemon();
-            $e_types = DaemonEvent::get_event_types(USER_EVENT | SYSTEM_EVENT | HIDDEN_EVENT);
-            $evts = $o->get_entries_by_mac(array($this->netConfigDNS->macAddress));
-            foreach($evts as $evt){
-                if(isset($e_types['QUEUED'][$evt['HEADERTAG']]) && $evt['STATUS'] == "processing" &&
-                        $e_types['QUEUED'][$evt['HEADERTAG']] == "DaemonEvent_reinstall"){
-                    $this->currently_installing =TRUE;
-                }
-            }
-        }
-
         /* Read arrays */
         foreach (array("ghNetNic", "ghIdeDev", "ghScsiDev") as $val){
             if (!isset($this->attrs[$val])){
@@ -215,10 +202,6 @@ class workgeneric extends plugin
                     $tmp = new $evt['CLASS_NAME']($this->config);
                     $tmp->add_targets(array($this->netConfigDNS->macAddress));
                     $tmp->set_type(TRIGGERED_EVENT);
-                    $o_queue = new gosaSupportDaemon();
-                    if(!$o_queue->append($tmp)){
-                        msg_dialog::display(_("Service infrastructure"),msgPool::siError($o_queue->get_error()),ERROR_DIALOG);
-                    }
                 }
             } else {
                 msg_dialog::display(_("Event error"),
@@ -269,40 +252,26 @@ class workgeneric extends plugin
         }
         $smarty->assign("gotoNtpServers", set_post($tmp));
 
-        /* Check if workstation is online */
-        if (gosaSupportDaemon::ping($this->netConfigDNS->macAddress)){
-            $smarty->assign("actions", 
-                    set_post(
-                        array(
-                            "halt" => _("Switch off"), 
-                            "reboot" => _("Reboot"),
-                            "update" => _("Software update"),
-                            "reinstall" => _("Reinstall"),
-                            "rescan" => _("Rescan hardware"),
-                            "localboot" => _("Force local boot"),
-                            )
-                        )
-                    );
-        } else {
-            $smarty->assign("actions", 
-                    set_post(
-                        array(
-                            "wakeup" => _("Wake up"),
-                            "reinstall" => _("Reinstall"),
-                            "update" => _("Software update"),
-                            "localboot" => _("Force local boot"),
-                            )
-                        )
-                    );
-        }
+        /* Check if workstation is online - actions won't to anything useful since the daemon isn't supported anymore */
+
+	$smarty->assign("actions", 
+			set_post(
+				array(
+					"wakeup" => _("Wake up"),
+					"reinstall" => _("Reinstall"),
+					"update" => _("Software update"),
+					"localboot" => _("Force local boot"),
+				     )
+				)
+		       );
+
         /* Arrays */
         $smarty->assign("modes",        set_post($this->modes));
         $smarty->assign("nfsservers",   set_post($this->config->data['SERVERS']['NFS']));
         $smarty->assign("syslogservers",set_post($this->gotoSyslogServers));
         $smarty->assign("fai_activated",set_post($this->fai_activated));
 
-        $si_url = $this->config->get_cfg_value("core","gosaSupportURI");
-        $smarty->assign("si_activated",!empty($si_url));
+        $smarty->assign("si_activated",FALSE);
 
         $ntpser = array();
         foreach($this->gotoNtpServers as $server){
@@ -372,12 +341,6 @@ class workgeneric extends plugin
             update_accessTo($this->cn,"");
         }
 
-        /* Clean queue form entries with this mac 
-         */
-        if(class_available("gosaSupportDaemon") && tests::is_mac($this->netConfigDNS->orig_macAddress)){
-            $q = new gosaSupportDaemon();
-            $q->clean_queue_from_mac($this->netConfigDNS->orig_macAddress);
-        }
 
         if(isset($_POST["inheritAll"])){
             $this->set_everything_to_inherited();
@@ -634,15 +597,12 @@ class workgeneric extends plugin
             /* Send installation activation
              */
             $events = DaemonEvent::get_event_types(SYSTEM_EVENT | HIDDEN_EVENT);
-            $o_queue = new gosaSupportDaemon();
             if(isset($events['TRIGGERED']['DaemonEvent_installation_activation'])){
                 $evt = $events['TRIGGERED']['DaemonEvent_installation_activation'];
                 $tmp = new $evt['CLASS_NAME']($this->config);
                 $tmp->set_type(TRIGGERED_EVENT);
                 $tmp->add_targets(array($this->netConfigDNS->macAddress));
-                if(!$o_queue->append($tmp)){
-                    msg_dialog::display(_("Service infrastructure"),msgPool::siError($o_queue->get_error()),ERROR_DIALOG);
-                }
+            
             }
         }
     }

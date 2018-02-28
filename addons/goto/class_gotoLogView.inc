@@ -8,7 +8,7 @@ class gotoLogView extends plugin
     var $parent;
     var $config;
 
-    var $o_queue;  
+    var $o_queue = NULL;  
 
     var $selected_date;
     var $selected_date_str;
@@ -33,10 +33,6 @@ class gotoLogView extends plugin
     
         $this->initTime = microtime(TRUE);
 
-        /* Try to fetch logs for the given event (mac)
-         */
-        $this->o_queue = new gosaSupportDaemon();
-
         /* Load ldap object if given 
            and use this macAddress.
          */
@@ -53,34 +49,6 @@ class gotoLogView extends plugin
         }elseif(isset($parent->attrs['macAddress'][0])){
             $this->mac = $parent->attrs['macAddress'][0];
             $this->standalone = FALSE;
-        }
-
-        /* Query for log files
-         */
-        $res = $this->o_queue->get_log_info_for_mac($this->mac);
-        if($this->o_queue->is_configured() && $this->o_queue->is_error()){
-            msg_dialog::display(_("Error"), $this->o_queue->get_error(), ERROR_DIALOG);
-        }else{
-            $tmp = array();
-            foreach($res as $mac => $logs){
-                if($mac != $this->mac) continue;
-
-                foreach($logs as $name => $log){
-                    if(isset($log['FILES'])){
-                        foreach($log['FILES'] as $fkey => $fval){
-                            $tmp[] = array(
-                                    'MAC'     => $mac,
-                                    'DATE'    => $log['REAL_DATE'],
-                                    'DATE_STR'=> $log['DATE_STR'],
-                                    'FILE'    => $fval);
-                        }
-                    }
-                }
-            } 
-
-            /* Check if there is at least one log file 
-             */
-            $this->logs = $tmp;
         }
 
         // Create the filter list
@@ -152,11 +120,7 @@ class gotoLogView extends plugin
 
     function get_log($mac,$date,$file)
     {
-        $res = $this->o_queue->get_log_file($mac,$date,$file);
-        if($this->o_queue->is_configured() && $this->o_queue->is_error()){
-            msg_dialog::display(_("Error"), $this->o_queue->get_error(), ERROR_DIALOG);
-        }
-        $res = nl2br(htmlentities($res));
+        $res = nl2br(htmlentities(""));
         return($res);
     }
 
