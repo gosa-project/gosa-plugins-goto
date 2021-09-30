@@ -838,13 +838,13 @@ class environment extends plugin
     }
 
     /* Dialog Aborted */
-    if(isset($_POST['hotplugSelect_cancel'])){
+    if(isset($_POST['hotplugSelect_cancel']) || isset($_POST['cancel-abort'])){
       $this->dialog= FALSE;
       $this->is_dialog = false;
     }
 
     /* Dialod saved */
-    if(isset($_POST['hotplugSelect_save'])){
+    if(isset($_POST['hotplugSelect_save']) || isset($_POST['ok-save'])){
 
       $res = $this->dialog->save();
       foreach($res as $hotplug){
@@ -894,12 +894,12 @@ class environment extends plugin
       $this->is_dialog=true;
     }
 
-    if(isset($_POST['printerSelect_cancel']) && $this->dialog instanceOf printerSelect){
+    if(isset($_POST['printerSelect_cancel']) || isset($_POST['cancel-abort']) && $this->dialog instanceOf printerSelect){
       $this->is_dialog=false;
       $this->dialog=FALSE;
     }
 
-    if(isset($_POST['printerSelect_save'])  && $this->dialog instanceOf printerSelect){
+    if(isset($_POST['printerSelect_save']) || isset($_POST['ok-save']) && $this->dialog instanceOf printerSelect){
 
       $res = $this->dialog->save();
         foreach($res as $printer){

@@ -34,6 +34,8 @@ class applicationParameters extends plugin
     /* Call parent execute */
     plugin::execute();
 
+    $theme = getThemeName();
+
     /* Do we need to flip is_account state? */
     if(isset($_POST['modify_state'])){
       if($this->is_account && $this->acl_is_removeable()){
@@ -92,40 +94,92 @@ class applicationParameters extends plugin
     
 
 
-    $acl = $this->getacl("gosaApplicationParameter")	;
-    $table= "<table summary=\""._("Application parameter")."\"><tr><td>"._("Variable")."</td><td>"._("Default value")."</td><td></td></tr>";
-    if (count ($this->option_name)){
+    $acl = $this->getacl("gosaApplicationParameter");
 
-      for ($i= 0; $i < count($this->option_name); $i++){
-        $name = $this->option_name[$i];
-        $value= $this->option_value[$i];
+    switch ($theme) {
+      case 'classic':
+        $table= "<table summary=\""._("Application parameter")."\"><tr><td>"._("Variable")."</td><td>"._("Default value")."</td><td></td></tr>";
+        if (count ($this->option_name)){
 
-        $tag = "";
-        if(!preg_match("/w/",$acl)){
-          $tag = " disabled ";
+          for ($i= 0; $i < count($this->option_name); $i++){
+            $name = $this->option_name[$i];
+            $value= $this->option_value[$i];
+
+            $tag = "";
+            if(!preg_match("/w/",$acl)){
+              $tag = " disabled ";
+            }
+
+            if(!preg_match("/r/",$acl)){
+              $name = "";
+              $value= "";
+            }
+
+            $table.="<tr>".
+              " <td>".
+              "  <input type='text' name=\"option$i\" size=25 maxlength=50 value=\"".set_post($name)."\" ".$tag.">".
+              " </td>".
+              " <td>".
+              "  <input type='text' name=\"value$i\" size=60 maxlength=250 value=\"".set_post($value)."\" ".$tag.">".
+              "  <br>".
+              " </td>".
+              " <td>".
+              "  <button type=\"submit\" name=\"remove$i\" ".$tag.">".msgPool::delButton()."</button>".
+              " </td>".
+              "</tr>";
+          }
         }
+        $table.= "</table>";
+        $table.="<button type=\"submit\" name=\"add_option\" $tag >"._("Add option")."</button>";
+        break;
+      
+      default:
+        $table= "<table>
+                  <thead>
+                    <tr> 
+                      <th>"._("Variable")."</th>
+                      <th>"._("Default value")."</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>";
+        if (count ($this->option_name)){
 
-        if(!preg_match("/r/",$acl)){
-          $name = "";
-          $value= "";
+          for ($i= 0; $i < count($this->option_name); $i++){
+            $name = $this->option_name[$i];
+            $value= $this->option_value[$i];
+
+            $tag = "";
+            if(!preg_match("/w/",$acl)){
+              $tag = " disabled ";
+            }
+
+            if(!preg_match("/r/",$acl)){
+              $name = "";
+              $value= "";
+            }
+
+            $table.=  "<tr>
+                        <td>
+                          <div class='input-field'>
+                            <input type='text' name=\"option$i\" size=25 maxlength=50 value=\"".set_post($name)."\" ".$tag.">
+                          </div>
+                        </td>
+                        <td>
+                          <div class='input-field'>
+                            <input type='text' name=\"value$i\" size=60 maxlength=250 value=\"".set_post($value)."\" ".$tag.">
+                          </div>    
+                        </td>
+                        <td><button class='btn-extra-small' type=\"submit\" name=\"remove$i\" ".$tag.">".msgPool::delButton()."</button></td>
+                      </tr>";
+          }
         }
-
-        $table.="<tr>".
-          " <td>".
-          "  <input type='text' name=\"option$i\" size=25 maxlength=50 value=\"".set_post($name)."\" ".$tag.">".
-          " </td>".
-          " <td>".
-          "  <input type='text' name=\"value$i\" size=60 maxlength=250 value=\"".set_post($value)."\" ".$tag.">".
-          "  <br>".
-          " </td>".
-          " <td>".
-          "  <button type=\"submit\" name=\"remove$i\" ".$tag.">".msgPool::delButton()."</button>".
-          " </td>".
-          "</tr>";
-      }
+        $table.=  " </tbody>
+                  </table>";
+        $table.="<button class='btn-small' type=\"submit\" name=\"add_option\" $tag >"._("Add option")."</button>";
+        break;
     }
-    $table.= "</table>";
-    $table.="<button type=\"submit\" name=\"add_option\" $tag >"._("Add option")."</button>";
+    
 
     /* Show main page */
     $smarty= get_smarty();

@@ -184,4 +184,7 @@
  </tr>
 </table>
 <input type="hidden" name="MimeGeneric" value="1"><!-- Place cursor -->
-<script language="JavaScript" type="text/javascript"><!-- // First input field on page	focus_field('cn');  --></script>
+<script language="JavaScript" type="text/javascript">
+  // First input field on page	
+  focus_field('cn'); 
+</script>

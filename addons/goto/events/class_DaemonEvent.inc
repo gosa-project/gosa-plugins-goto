@@ -3,7 +3,7 @@
  * This code is part of GOsa (http://www.gosa-project.org)
  * Copyright (C) 2003-2008 GONICUS GmbH
  *
- * ID: $$Id$$
+ * ID: $$Id: class_DaemonEvent.inc 20962 2011-07-27 08:00:12Z hickert $$
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,13 +138,27 @@ class DaemonEvent
      */
     public function execute()
     {
+        $theme = getThemeName();
+
         $this->time_select_used = FALSE;
         $this->target_list_used = FALSE;
 
-        $str = "<h3>"._("This job has no template!")."</h3>";
-        $str.= "<hr>";
-        $str.= "<div class='plugin-actions'>
-            <button type='submit' name='abort_event_dialog'>".msgPool::cancelButton()."</button> </div>";
+        switch ($theme) {
+            case 'classic':
+                $str = "<h3>"._("This job has no template!")."</h3>";
+                $str.= "<hr>";
+                $str.= "<div class='plugin-actions'>
+                            <button type='submit' name='abort_event_dialog'>".msgPool::cancelButton()."</button> 
+                        </div>";
+                break;
+            
+            default:
+                $str = "<h3>"._("This job has no template!")."</h3>
+                        <div class='card-action'>
+                            <button class='btn-small' type='submit' name='abort_event_dialog'>".msgPool::cancelButton()."</button> 
+                        </div>";
+                break;
+        }
         return($str);
     }
 
@@ -156,7 +170,7 @@ class DaemonEvent
         if($this->target_add_list_used){
             return("");
         }
-        $str = "<h3>".sprintf(_("Create '%s' job"),$this->s_Event_Name)."</h3>";
+        $str = "<h2>".sprintf(_("Create '%s' job"),$this->s_Event_Name)."</h2>";
         return($str);
     }
 
@@ -166,14 +180,29 @@ class DaemonEvent
      */
     public function get_footer()
     {
+        $theme = getThemeName();
+
         if($this->target_add_list_used){
             return("");
         }
-        $str = "<hr>";
-        $str.= "<div class='plugin-actions'>
-            <button type='submit' name='save_event_dialog'>".msgPool::saveButton()."</button>&nbsp;
-        <button type='submit' name='abort_event_dialog'>".msgPool::cancelButton()."</button>
-            </div>";
+
+        switch ($theme) {
+            case 'classic':
+                $str = "<hr>";
+                $str.= "<div class='plugin-actions'>
+                            <button type='submit' name='save_event_dialog'>".msgPool::saveButton()."</button>&nbsp;
+                            <button type='submit' name='abort_event_dialog'>".msgPool::cancelButton()."</button>
+                        </div>";
+                break;
+            
+            default:
+                $str = "<div class='card-action'>
+                            <button class='btn-small' type='submit' name='save_event_dialog'>".msgPool::saveButton()."</button>
+                            <button class='btn-small' type='submit' name='abort_event_dialog'>".msgPool::cancelButton()."</button>
+                        </div>";
+                break;
+        }
+        
         return($str);
     }
 
@@ -261,6 +290,8 @@ class DaemonEvent
     {
         $data = $lData = array();
 
+        $theme = getThemeName();
+
         $this->target_list_used = TRUE;
         foreach($this->a_targets as $key => $target){
             $data[$key] = $target;
@@ -268,7 +299,15 @@ class DaemonEvent
         }
         $this->targetList->setListData($data, $lData);
         $this->targetList->update();
-        $list_footer = "<button type='submit' name='open_target_list'>"._("Add")."</button>";
+        switch ($theme) {
+            case 'classic':
+            $list_footer = "<button type='submit' name='open_target_list'>"._("Add")."</button>";
+                break;
+            
+            default:
+                $list_footer = "<button class='btn-small' type='submit' name='open_target_list'>"._("Add")."</button>";
+                break;
+        }
         return($this->targetList->render().$list_footer);
     }
 
