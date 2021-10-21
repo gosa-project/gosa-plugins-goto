@@ -214,11 +214,7 @@ class termgeneric extends plugin
         /* Delete selected NtpServer for list of used servers  */
         if((isset($_POST['delNtpServer'])) && (isset($_POST['gotoNtpServerSelected'])) && $this->acl_is_writeable("gotoNtpServer")){
             foreach(get_post('gotoNtpServerSelected') as $name){
-		if(gettype($name) == "string") {
-                    unset($this->gotoNtpServer[$name]);
-		} else {
-		    unset($this->gotoNtpServer[$name[0]]);
-		}
+                unset($this->gotoNtpServer[$name]);
             } 
         }
 

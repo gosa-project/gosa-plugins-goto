@@ -16,7 +16,7 @@
       <objectClass>gotoMimeType</objectClass>
       <category>mimetypes</category>
       <class>mimetype</class>
-      <image>task</image>
+      <image>file_copy</image>
     </objectType>
 
   </definition>
@@ -70,7 +70,7 @@
      <action>
       <name>new</name>
       <type>entry</type>
-      <image>task</image>
+      <image>file_copy</image>
       <label>Mime-type</label>
      </action>
     </action>

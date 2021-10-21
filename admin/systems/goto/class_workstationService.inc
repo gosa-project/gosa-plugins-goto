@@ -530,7 +530,7 @@ class workservice extends plugin
     {
         if(count($this->attrs) && class_available("DaemonEvent")){
             $events = DaemonEvent::get_event_types(SYSTEM_EVENT | HIDDEN_EVENT);
-       }
+        }
     }
 
 
