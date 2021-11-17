@@ -6,17 +6,16 @@
 </p>
 
 <hr>
-<div class="plugin-actions">
-  <button type='submit' name='cd_create'>{t}Create ISO-Image{/t}</button>
+<div class="card-action">
+  <button class="btn-small primary" type='submit' name='cd_create'>{t}Create ISO-Image{/t}</button>
 
-  <button type='submit' name='cd_cancel'>{msgPool type=cancelButton}</button>
+  <button class="btn-small primary" type='submit' name='cd_cancel'>{msgPool type=cancelButton}</button>
 
 </div>
 
 <!-- Place cursor -->
 <script language="JavaScript" type="text/javascript">
-  <!-- // First input field on page
-  	nextfield= 'new_password';
+  // First input field on page
+  nextfield= 'new_password';
 	focus_field('new_password');
-  -->
 </script>

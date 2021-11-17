@@ -120,9 +120,7 @@
 
 <!-- Place cursor -->
 <script language="JavaScript" type="text/javascript">
-
-  <!-- // First input field on page
+  // First input field on page
   if(document.mainform.cn)
 	focus_field('cn');
-  -->
 </script>

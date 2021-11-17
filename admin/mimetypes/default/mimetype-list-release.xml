@@ -6,7 +6,7 @@
     <departmentRootVisible>false</departmentRootVisible>
     <baseMode>false</baseMode>
     <multiSelect>true</multiSelect>
-    <template>mimetype-list-release.tpl</template>
+    <template>../../../ihtml/themes/default/list.tpl</template>
     <module>mimetypes</module>
     <label>List of mime-types</label>
     <defaultSortColumn>1</defaultSortColumn>

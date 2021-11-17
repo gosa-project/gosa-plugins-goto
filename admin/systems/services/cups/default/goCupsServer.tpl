@@ -1,9 +1,9 @@
-<h3>{t}Print Service{/t} {t}enabled{/t}</h3>
+<div class="cups-wrapper">
+    <h3>{t}Print Service{/t} {t}enabled{/t}</h3>
+</div>
 
-<hr>
-
-<div class="plugin-actions">
- <button type='submit' name='SaveService'>{msgPool type=saveButton}</button>
- <button type='submit' name='CancelService'>{msgPool type=cancelButton}</button>
+<div class="card-action">
+ <button class="btn-small primary" type='submit' name='SaveService'>{msgPool type=saveButton}</button>
+ <button class="btn-small primary" type='submit' name='CancelService'>{msgPool type=cancelButton}</button>
 </div>
 <input type="hidden" name="goCupsServerPosted" value="1">
