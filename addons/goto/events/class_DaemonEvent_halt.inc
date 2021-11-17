@@ -3,7 +3,7 @@
  * This code is part of GOsa (http://www.gosa-project.org)
  * Copyright (C) 2003-2008 GONICUS GmbH
  *
- * ID: $$Id$$
+ * ID: $$Id: class_DaemonEvent_halt.inc 19060 2010-07-23 09:33:51Z hickert $$
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ class DaemonEvent_halt extends DaemonEvent
     {
         DaemonEvent::execute();
 
+        $theme = getThemeName();
+
         $display = $this->get_header();
 
         $tmp = $this->data;
@@ -55,7 +57,15 @@ class DaemonEvent_halt extends DaemonEvent
         $smarty->assign("target_list" , $this->get_target_list());
         $smarty->assign("is_new"      , $this->is_new);
         $smarty->assign("timestamp"   , $this->get_time_select());
-        $display.= $smarty->fetch(get_template_path('DaemonEvent_halt.tpl', TRUE, dirname(__FILE__)));
+        switch ($theme) {
+            case 'classic':
+                $display.= $smarty->fetch(get_template_path('DaemonEvent_halt.tpl', TRUE, dirname(__FILE__)));
+                break;
+            
+            default:
+                $display.= $smarty->fetch(get_template_path('DaemonEvent.tpl', TRUE, dirname(__FILE__)));
+                break;
+        }
         $display.= $this->get_footer();
         return($display);
     }

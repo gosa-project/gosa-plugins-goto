@@ -350,9 +350,16 @@ class printgeneric extends plugin
 
         /* Do we represent a valid printer? */
         if (!$this->is_account && $this->parent === NULL){
-            $display= "<img alt=\"\" src=\"images/small-error.png\" align=middle>&nbsp;<b>".
-                msgPool::noValidExtension(_("printer"))."</b>";
-            return($display);
+            switch ($theme) {
+                case 'classic':
+                  $symbol = "<img alt='' src='images/small-error.png' align='middle'>";
+                  break;
+                
+                default:
+                  $symbol = "<i class='material-icons'>report</i>";
+                  break;
+            }
+            $display = "<div class='valign-wrapper'>".$symbol.msgPool::noValidExtension(_("printer"))."</div>";
         }
 
         /* If this is a WS / Terminal depending printer, display account state button */
@@ -495,14 +502,14 @@ class printgeneric extends plugin
         }
 
         // Abort user / group adding dialog 
-        if(isset($_POST['userGroupSelect_cancel'])){
+        if(isset($_POST['userGroupSelect_cancel']) || isset($_POST['cancel-abort'])){
             $this->dialog=FALSE;
             $this->userSelect = NULL;
             $this->adminUserSelect = NULL;
         }
 
         // Save selected users / groups 
-        if(isset($_POST['userGroupSelect_save'])){
+        if(isset($_POST['userGroupSelect_save']) || isset($_POST['ok-save'])){
             $users = array();
             if($this->userSelect instanceOf userGroupSelect){
                 $users = $this->userSelect->save();

@@ -22,20 +22,20 @@
 
 class DaemonEvent_goto_reload extends DaemonEvent
 {
-    var $visible_for = HIDDEN_EVENT;
-    var $mac = array();
+    public $visible_for = HIDDEN_EVENT;
+    public $mac = array();
     protected $attributes = array("mac");
 
     public function set_macs($macs)
     {
         $this->mac = $macs;
-    }  
+    }
 
-    public function __construct($config,$data = array())
+    public function __construct($config, $data = array())
     {
-        DaemonEvent::__construct($config,$data);
-        $this->s_Menu_Name  = _("GOto reload"); 
-        $this->s_Event_Name = _("Reload GOto settings"); 
+        DaemonEvent::__construct($config, $data);
+        $this->s_Menu_Name  = _("GOto reload");
+        $this->s_Event_Name = _("Reload GOto settings");
         $this->s_Schedule_Action= "job_trigger_goto_settings_reload";
         $this->s_Trigger_Action = "gosa_trigger_goto_settings_reload";
         $this->s_Queued_Action  = "trigger_action_goto_settings_reload";
@@ -47,21 +47,31 @@ class DaemonEvent_goto_reload extends DaemonEvent
     {
         DaemonEvent::execute();
 
+        $theme = getThemeName();
+
         $display = $this->get_header();
 
         $tmp = $this->data;
 
         /* Check if target add dialog is open */
-        if($this->is_target_list_open() && $this->is_new){
+        if ($this->is_target_list_open() && $this->is_new) {
             return($this->get_target_add_list());
         }
 
         $smarty = get_smarty();
-        $smarty->assign("data"        , $this->data);
-        $smarty->assign("target_list" , $this->get_target_list());
-        $smarty->assign("is_new"      , $this->is_new);
-        $smarty->assign("timestamp"   , $this->get_time_select());
-        $display.= $smarty->fetch(get_template_path('DaemonEvent_goto_reload.tpl', TRUE, dirname(__FILE__)));
+        $smarty->assign("data", $this->data);
+        $smarty->assign("target_list", $this->get_target_list());
+        $smarty->assign("is_new", $this->is_new);
+        $smarty->assign("timestamp", $this->get_time_select());
+        switch ($theme) {
+            case 'classic':
+                $display.= $smarty->fetch(get_template_path('DaemonEvent_goto_reload.tpl', true, dirname(__FILE__)));
+                break;
+            
+            default:
+                $display.= $smarty->fetch(get_template_path('DaemonEvent.tpl', true, dirname(__FILE__)));
+                break;
+        }
         $display.= $this->get_footer();
         return($display);
     }
@@ -70,6 +80,5 @@ class DaemonEvent_goto_reload extends DaemonEvent
     {
         DaemonEvent::save_object();
     }
-} 
+}
 // vim:tabstop=2:expandtab:shiftwidth=2:filetype=php:syntax:ruler:
-?>

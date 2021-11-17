@@ -25,6 +25,7 @@ class deviceManagement extends management
     var $plHeadline     = "Hot-plug devices";
     var $plDescription  = "Manage hot-plug devices that are assignable to desktop profiles";
     var $plIcon  = "plugins/goto/images/devices.png";
+    var $matIcon = "devices";
 
     var $app_release = ""; // The currently selected release while in release management mode!
 

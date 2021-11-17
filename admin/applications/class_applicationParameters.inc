@@ -34,6 +34,8 @@ class applicationParameters extends plugin
     /* Call parent execute */
     plugin::execute();
 
+    $theme = getThemeName();
+
     /* Do we need to flip is_account state? */
     if(isset($_POST['modify_state'])){
       if($this->is_account && $this->acl_is_removeable()){
@@ -89,43 +91,86 @@ class applicationParameters extends plugin
       $this->option_name[]= "";
       $this->option_value[]= "";
     }
-    
 
 
-    $acl = $this->getacl("gosaApplicationParameter")	;
-    $table= "<table summary=\""._("Application parameter")."\"><tr><td>"._("Variable")."</td><td>"._("Default value")."</td><td></td></tr>";
-    if (count ($this->option_name)){
 
-      for ($i= 0; $i < count($this->option_name); $i++){
-        $name = $this->option_name[$i];
-        $value= $this->option_value[$i];
+    $acl = $this->getacl("gosaApplicationParameter");
 
-        $tag = "";
-        if(!preg_match("/w/",$acl)){
-          $tag = " disabled ";
+    switch ($theme) {
+      case 'classic':
+        $table= "<table summary=\""._("Application parameter")."\"><tr><td>"._("Variable")."</td><td>"._("Default value")."</td><td></td></tr>";
+        if (count ($this->option_name)){
+
+          for ($i= 0; $i < count($this->option_name); $i++){
+            $name = $this->option_name[$i];
+            $value= $this->option_value[$i];
+
+            $tag = "";
+            if(!preg_match("/w/",$acl)){
+              $tag = " disabled ";
+            }
+
+            if(!preg_match("/r/",$acl)){
+              $name = "";
+              $value= "";
+            }
+
+            $table.="<tr>".
+              " <td>".
+              "  <input type='text' name=\"option$i\" size=25 maxlength=50 value=\"".set_post($name)."\" ".$tag.">".
+              " </td>".
+              " <td>".
+              "  <input type='text' name=\"value$i\" size=60 maxlength=250 value=\"".set_post($value)."\" ".$tag.">".
+              "  <br>".
+              " </td>".
+              " <td>".
+              "  <button type=\"submit\" name=\"remove$i\" ".$tag.">".msgPool::delButton()."</button>".
+              " </td>".
+              "</tr>";
+          }
         }
+        $table.= "</table>";
+        $table.="<button type=\"submit\" name=\"add_option\" $tag >"._("Add option")."</button>";
+        break;
 
-        if(!preg_match("/r/",$acl)){
-          $name = "";
-          $value= "";
+      default:
+        $table= "<div class='parameter-content'>";
+        if (count ($this->option_name)){
+
+          for ($i= 0; $i < count($this->option_name); $i++){
+            $name = $this->option_name[$i];
+            $value= $this->option_value[$i];
+
+            $tag = "";
+            if(!preg_match("/w/",$acl)){
+              $tag = " disabled ";
+            }
+
+            if(!preg_match("/r/",$acl)){
+              $name = "";
+              $value= "";
+            }
+
+            $table.=  "<div class='parameter-option'>
+                        <div class='input-field'>
+                          <input type='text' name=\"option$i\" size=25 maxlength=50 value=\"".set_post($name)."\" ".$tag.">
+                          <label for=\"option$i\">"._("Variable")."</label>
+                        </div>
+                        <div class='input-field'>
+                          <input type='text' name=\"value$i\" size=60 maxlength=250 value=\"".set_post($value)."\" ".$tag.">
+                          <label for=\"value$i\">"._("Default value")."</label>
+                        </div>
+                        <div class='action-wrapper'>
+                          <button class='btn-small' type=\"submit\" name=\"remove$i\" ".$tag.">".msgPool::delButton()."</button>
+                        </div>
+                      </div>";
+          }
         }
-
-        $table.="<tr>".
-          " <td>".
-          "  <input type='text' name=\"option$i\" size=25 maxlength=50 value=\"".set_post($name)."\" ".$tag.">".
-          " </td>".
-          " <td>".
-          "  <input type='text' name=\"value$i\" size=60 maxlength=250 value=\"".set_post($value)."\" ".$tag.">".
-          "  <br>".
-          " </td>".
-          " <td>".
-          "  <button type=\"submit\" name=\"remove$i\" ".$tag.">".msgPool::delButton()."</button>".
-          " </td>".
-          "</tr>";
-      }
+        $table.=  "</div>";
+        $table.="<button class='btn-small' type=\"submit\" name=\"add_option\" $tag >"._("Add option")."</button>";
+        break;
     }
-    $table.= "</table>";
-    $table.="<button type=\"submit\" name=\"add_option\" $tag >"._("Add option")."</button>";
+
 
     /* Show main page */
     $smarty= get_smarty();
@@ -152,7 +197,7 @@ class applicationParameters extends plugin
     @DEBUG (DEBUG_LDAP, __LINE__, __FUNCTION__, __FILE__,
         $this->attributes, "Save");
     $this->cleanup();
-    $ldap->modify ($this->attrs); 
+    $ldap->modify ($this->attrs);
 
     if (!$ldap->success()){
       msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, LDAP_MOD, get_class()));
@@ -215,7 +260,7 @@ class applicationParameters extends plugin
     @DEBUG (DEBUG_LDAP, __LINE__, __FUNCTION__, __FILE__,
         $this->attributes, "Save");
     $this->cleanup();
-    $ldap->modify ($this->attrs); 
+    $ldap->modify ($this->attrs);
 
     if (!$ldap->success()){
       msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, LDAP_MOD, get_class()));
@@ -225,7 +270,7 @@ class applicationParameters extends plugin
     $this->handle_post_events('modify');
   }
 
- 
+
   function PrepareForCopyPaste($source)
   {
     plugin::PrepareForCopyPaste($source);
@@ -253,7 +298,7 @@ class applicationParameters extends plugin
           "plCategory"    => array("application"),
 
           "plProvidedAcls"=> array(
-            "gosaApplicationParameter"      => _("Application parameter settings"))  
+            "gosaApplicationParameter"      => _("Application parameter settings"))
           ));
   }
 

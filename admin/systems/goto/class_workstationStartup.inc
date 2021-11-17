@@ -311,7 +311,16 @@ class workstartup extends plugin
 
         /* Do we represent a valid terminal? */
         if (!$this->is_account && $this->parent === NULL){
-            $display= image("images/small-error.png")."<b>".msgPool::noValidExtension(_("workstation"))."</b>";
+            switch ($theme) {
+                case 'classic':
+                  $symbol = "<img alt='' src='images/small-error.png' align='middle'>";
+                  break;
+                
+                default:
+                  $symbol = "<i class='material-icons'>report</i>";
+                  break;
+            }
+            $display = "<div class='valign-wrapper'>".$symbol.msgPool::noValidExtension(_("workstation"))."</div>";
             return ($display);
         }
 

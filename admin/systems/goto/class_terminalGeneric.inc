@@ -201,8 +201,16 @@ class termgeneric extends plugin
 
         /* Do we represent a valid terminal? */
         if (!$this->is_account && $this->parent === NULL){
-            $display= "<img alt=\"\" src=\"images/small-error.png\" align=middle>&nbsp;<b>".
-                msgPool::noValidExtension(_("terminal"))."</b>";
+            switch ($theme) {
+                case 'classic':
+                  $symbol = "<img alt='' src='images/small-error.png' align='middle'>";
+                  break;
+                
+                default:
+                  $symbol = "<i class='material-icons'>report</i>";
+                  break;
+            }
+            $display = "<div class='valign-wrapper'>".$symbol.msgPool::noValidExtension(_("printer"))."</div>";
             return($display);
         }
 
@@ -214,11 +222,7 @@ class termgeneric extends plugin
         /* Delete selected NtpServer for list of used servers  */
         if((isset($_POST['delNtpServer'])) && (isset($_POST['gotoNtpServerSelected'])) && $this->acl_is_writeable("gotoNtpServer")){
             foreach(get_post('gotoNtpServerSelected') as $name){
-		if(gettype($name) == "string") {
-                    unset($this->gotoNtpServer[$name]);
-		} else {
-		    unset($this->gotoNtpServer[$name[0]]);
-		}
+                unset($this->gotoNtpServer[$name]);
             } 
         }
 

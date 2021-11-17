@@ -213,9 +213,17 @@ class workgeneric extends plugin
 
         /* Do we represent a valid terminal? */
         if (!$this->is_account && $this->parent === NULL){
-            $display= "<img alt=\"\" src=\"images/small-error.png\" align=middle>&nbsp;<b>".
-                msgPool::noValidExtension(_("workstation"))."</b>";
-            return($display);
+            switch ($theme) {
+                case 'classic':
+                  $symbol = "<img alt='' src='images/small-error.png' align='middle'>";
+                  break;
+                
+                default:
+                  $symbol = "<i class='material-icons'>report</i>";
+                  break;
+            }
+            $display = "<div class='valign-wrapper'>".$symbol.msgPool::noValidExtension(_("workstation"))."</div>";
+            return $display;
         }
 
         /* Add new ntp Server to our list */ 

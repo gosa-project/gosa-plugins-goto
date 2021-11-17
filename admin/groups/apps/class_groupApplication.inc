@@ -378,6 +378,8 @@ class appgroup extends plugin
         /* Call parent execute */
         plugin::execute();
 
+        $theme = getThemeName();
+
         if(isset($_GET['r'])) $this->__construct($this->config,$this->dn);
 
         if (isset($_POST['modify_state'])){
@@ -456,7 +458,15 @@ class appgroup extends plugin
         // Append departments for current base 
         $data = $lData = array();
         foreach($departments as $key => $app){
-            $img = image('images/lists/folder.png');
+            switch ($theme) {
+                case 'classic':
+                    $img = image('images/lists/folder.png');
+                    break;
+                
+                default:
+                    $img = image("<i class='material-icons'>folder</i>");
+                    break;
+            }
             $data[$key] = array('TYPE'=>'DEP','ID'=> $app);
             $lData[$key] = array('data' => array($img,"&nbsp;",$app));
 
@@ -474,7 +484,17 @@ class appgroup extends plugin
             if(isset($app['description'])){
                 $name .= "&nbsp;[".$app['description'][0]."]";
             }
-            $img = image('plugins/goto/images/select_application.png');
+            switch ($theme) {
+                case 'classic':
+                    $img = image('plugins/goto/images/select_application.png');
+
+                    break;
+                
+                default:
+                $img = image("<i class='material-icons'>apps</i>");
+
+                    break;
+            }
             $chk = "<input class='center' type='checkbox' value='1' name='AddApp_".$key."'>";
             $data[$key] = array('TYPE'=>'APP','ID'=> $app);
             $lData[$key] = array('data' => array($img,$chk,$name));
