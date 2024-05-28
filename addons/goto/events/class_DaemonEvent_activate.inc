@@ -63,5 +63,5 @@ class DaemonEvent_activate extends DaemonEvent
         DaemonEvent::save_object();
     }
 } 
-// vim:tabstop=2:expandtab:shiftwidth=2:filetype=php:syntax:ruler:
+
 ?>

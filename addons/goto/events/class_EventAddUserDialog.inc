@@ -78,5 +78,5 @@ class EventAddUserDialog extends management
         return($a_targets);
     }
 }
-// vim:tabstop=2:expandtab:shiftwidth=2:filetype=php:syntax:ruler:
+
 ?>
