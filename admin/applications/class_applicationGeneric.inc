@@ -247,7 +247,7 @@ class application extends plugin
     $ldap->rmDir($this->dn);
     new log("remove","application/".get_class($this),$this->dn,array_keys($this->attrs),$ldap->get_error());
     if (!$ldap->success()){
-      msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, LDAP_DEL, get_class()), ERROR_DIALOG);
+      msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, LDAP_DEL, __CLASS__), ERROR_DIALOG);
     }
 
     /* Optionally execute a command after we're done */
@@ -261,7 +261,7 @@ class application extends plugin
       unset($og->member[$this->dn]);
       $og->save ();
       if (!$ldap->success()){
-        msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, 0, get_class()), ERROR_DIALOG);
+        msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, 0, __CLASS__), ERROR_DIALOG);
       }
     }
   }
@@ -499,7 +499,7 @@ class application extends plugin
       $this->handle_post_events("add");
     }
     if (!$ldap->success()){
-      msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, 0, get_class()), ERROR_DIALOG);
+      msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, 0, __CLASS__), ERROR_DIALOG);
     }
   }
 
@@ -589,7 +589,7 @@ class application extends plugin
                           "objectClass"  => "gosaApplication")),
                   "plRequirements"=> array(
                       'ldapSchema' => array('gosaApplication' => '>=2.7'),
-                      'onFailureDisablePlugin' => array(get_class(),'applicationManagement','appgroup')
+                      'onFailureDisablePlugin' => array(__CLASS__,'applicationManagement','appgroup')
                       ),
                   "plProperties" =>
                   array(

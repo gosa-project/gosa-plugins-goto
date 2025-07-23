@@ -125,7 +125,7 @@ class ArpNewDevice extends plugin
             $ldap->cd($this->config->current['BASE']);
             $ldap->rmdir_recursive($this->dn);
             if (!$ldap->success()){
-                msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $key->dn, LDAP_DEL, get_class()));
+                msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $key->dn, LDAP_DEL, __CLASS__));
             }
         }
     }

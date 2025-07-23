@@ -645,7 +645,7 @@ class appgroup extends plugin
         foreach($a_remove as $remove){
             $ldap->rmdir_recursive($remove);
             if (!$ldap->success()){
-                msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, LDAP_DEL, get_class()));
+                msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, LDAP_DEL, __CLASS__));
             }
         }
         $this->_load_menu_structure();
@@ -1332,7 +1332,7 @@ class appgroup extends plugin
             if($ldap->count()){
                 $ldap->rmdir_recursive($dn);
                 if (!$ldap->success()){
-                    msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $dn, LDAP_DEL, get_class()));
+                    msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $dn, LDAP_DEL, __CLASS__));
                 }
             }
         }
@@ -1346,7 +1346,7 @@ class appgroup extends plugin
             if(!$ldap->count()){
                 $ldap->add($data);
                 if (!$ldap->success()){
-                    msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $dn, LDAP_ADD, get_class()));
+                    msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $dn, LDAP_ADD, __CLASS__));
                 }
             }
         }
@@ -1360,7 +1360,7 @@ class appgroup extends plugin
             if($ldap->count()){
                 $ldap->modify($data);
                 if (!$ldap->success()){
-                    msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $dn, LDAP_MOD, get_class()));
+                    msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $dn, LDAP_MOD, __CLASS__));
                 }
             }
         }
@@ -1384,7 +1384,7 @@ class appgroup extends plugin
                     "plCategory"    => array("groups","ogroups"),
                     "plRequirements"=> array(
                         'ldapSchema' => array('gotoSubmenuEntry'=>'>=2.7','gotoMenuEntry' => '>=2.7'),
-                        'onFailureDisablePlugin' => array(get_class())
+                        'onFailureDisablePlugin' => array(__CLASS__)
                         ),
                     "plProvidedAcls"=> array(
                         "gosaMemberApplication"     => _("Application"),

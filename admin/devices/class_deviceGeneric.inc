@@ -211,7 +211,7 @@ class deviceGeneric extends plugin
             $ldap->add($this->attrs);
         }
         if (!$ldap->success()){
-            msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, 0, get_class()));
+            msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, 0, __CLASS__));
         }
     }
 
@@ -274,7 +274,7 @@ class deviceGeneric extends plugin
                     "plSection"     => array("administration"),
                     "plRequirements"=> array(
                         'ldapSchema' => array('gotoDevice' => '>=2.7'),
-                        'onFailureDisablePlugin' => array(get_class(), 'deviceManagement')
+                        'onFailureDisablePlugin' => array(__CLASS__, 'deviceManagement')
                         ),
                     "plCategory"    => array("devices" => array("description"  => _("Devices"),
                             "objectClass"  => "gotoDevice")),
